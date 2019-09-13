@@ -3,11 +3,19 @@ public class ChocolateBoiler {
   private boolean boiled;
 
   // Singleton
-  private static ChocolateBoiler instance;
+  private static volatile ChocolateBoiler instance;
+  private static final Object mutex = new Object();
 
-  public static ChocolateBoiler getInstance() {
+  public static synchronized ChocolateBoiler getInstance() {
+    ChocolateBoiler tmp = instance;
     if (instance == null) {
-      instance = new ChocolateBoiler();
+        synchronized(mutex){
+            tmp = instance;
+            if(tmp == null){
+                tmp = new ChocolateBoiler();
+                instance = tmp;
+            }
+        }
     }
     return instance;
   }
